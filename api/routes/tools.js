@@ -6,8 +6,10 @@ const Tool = require('../models/tool');
 
 
  router.get('/', async (req, res, next) => {
-    try{
-        const response = await Tool.find().exec();
+    const {tag, search} = req.query;
+    if(tag){
+        const tagRegex = new RegExp(`${tag}.*`,'gi');
+        const response = await Tool.find({ tags: tagRegex }).exec();
         const tools = response.map(tool => {
             return {
                 id: tool._id,
@@ -18,12 +20,42 @@ const Tool = require('../models/tool');
             };
         });
         res.status(200).json(tools);
-    } catch (err) {
-        res.status(500).json({
-            error: err
+
+    } else if (search){
+        const searchRegex = new RegExp(`${search}.*`,'gi');
+        const response = await Tool.find({$or: [{ title: searchRegex }, { link: searchRegex }, { description: searchRegex}]}).exec();
+        const tools = response.map(tool => {
+            return {
+                id: tool._id,
+                title: tool.title,
+                link: tool.link,
+                description: tool.description,
+                tags: tool.tags
+            };
         });
-    };
+        res.status(200).json(tools);
+    } else {
+        try{
+            const response = await Tool.find().exec();
+            const tools = response.map(tool => {
+                return {
+                    id: tool._id,
+                    title: tool.title,
+                    link: tool.link,
+                    description: tool.description,
+                    tags: tool.tags
+                };
+            });
+            res.status(200).json(tools);
+        } catch (err) {
+            res.status(500).json({
+                error: err
+            });
+        };
+    }
 });
+
+
 
 router.post('/', async (req, res, next) => {
     const tool = new Tool({
