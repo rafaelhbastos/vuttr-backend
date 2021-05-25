@@ -1,16 +1,21 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const cors = require("cors");
 
-const toolRoutes = require('./api/routes/tools');
+const toolRoutes = require("./api/routes/tools");
 
-mongoose.connect('mongodb+srv://rafaelpessoa12:' + process.env.MONGO_ATLAS_PW + '@cluster0.05jl7.mongodb.net/vuttrDatabase?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(
+  "mongodb+srv://rafaelpessoa12:" +
+    process.env.MONGO_ATLAS_PW +
+    "@cluster0.05jl7.mongodb.net/vuttrDatabase?retryWrites=true&w=majority",
+  { useNewUrlParser: true, useUnifiedTopology: true }
+);
 
 app.use(cors());
 app.use(express.json());
 
-app.use('/tools', toolRoutes);
+app.use("/tools", toolRoutes);
 
 module.exports = app;
 
